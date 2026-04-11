@@ -1,0 +1,12 @@
+/* src/index.css */
+/* Rimuove i margini di default del browser su tutto il sito */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Evita scorrimenti orizzontali accidentali */
+}
+
+/* Imposta il font globale se non l'hai già fatto */
+body {
+  font-family: sans-serif;
+}
