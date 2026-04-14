@@ -6,7 +6,7 @@ const utente_database = process.env.DB_USER;
 const password_database = process.env.DB_PASSWORD;
 const nome_database = process.env.DB_NAME;
 const porta_database = process.env.DB_PORT;
-
+// Creazione del pool di connessioni al database MySQL
 const gestore_connessioni = mysql.createPool({
     host: server_database,
     user: utente_database,
