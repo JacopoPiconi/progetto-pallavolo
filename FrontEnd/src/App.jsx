@@ -3,6 +3,7 @@ import Home from './Home';
 import Login from './Login';
 import Dashboard from './Dashboard';
 import Calendario from './Calendario';
+import Classifiche from './Classifiche';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -33,6 +34,14 @@ function App() {
 
       {currentPage === 'calendario' && (
         <Calendario 
+          onBackClick={() => setCurrentPage('home')} 
+          onLoginClick={() => setCurrentPage('login')}
+          onNavClick={(page) => setCurrentPage(page)}
+        />
+      )}
+
+      {currentPage === 'classifiche' && (
+        <Classifiche 
           onBackClick={() => setCurrentPage('home')} 
           onLoginClick={() => setCurrentPage('login')}
           onNavClick={(page) => setCurrentPage(page)}
