@@ -46,7 +46,7 @@ function Classifiche({ onBackClick, onLoginClick, onNavClick }) {
         <span onClick={() => onNavClick('calendario')} style={subMenuItem}>Calendario</span>
         <span style={activeSubMenu}>Classifiche</span>
         <span onClick={() => onNavClick('giocatori')} style={subMenuItem}>Giocatori</span>
-        <span style={subMenuItem}>Match Predictor</span>
+        <span onClick={() => onNavClick('matchpred')} style={subMenuItem}>Match Predictor</span>
       </div>
 
       <div style={{ padding: '30px 5%' }}>

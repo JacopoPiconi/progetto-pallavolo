@@ -5,18 +5,17 @@ import Dashboard from './Dashboard';
 import Calendario from './Calendario';
 import Classifiche from './Classifiche';
 import Giocatori from './Giocatori';
+import MatchPred from './MatchPred';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [lastViewedTab, setLastViewedTab] = useState('dashboard');
-  // Questa variabile serve a Login per sapere dove tornare
   const [previousPage, setPreviousPage] = useState('home');
 
   const navigateTo = (page) => {
-    if (['dashboard', 'calendario', 'classifiche', 'giocatori'].includes(page)) {
+    if (['dashboard', 'calendario', 'classifiche', 'giocatori', 'matchpred'].includes(page)) {
       setLastViewedTab(page);
     }
-    // Prima di cambiare, memorizziamo da dove veniamo
     setPreviousPage(currentPage);
     setCurrentPage(page);
   };
@@ -24,10 +23,7 @@ function App() {
   return (
     <div className="App">
       {currentPage === 'home' && (
-        <Home 
-          onLoginClick={() => navigateTo('login')} 
-          onExploreClick={() => navigateTo(lastViewedTab)} 
-        />
+        <Home onLoginClick={() => navigateTo('login')} onExploreClick={() => navigateTo(lastViewedTab)} />
       )}
       
       {currentPage === 'login' && (
@@ -48,6 +44,10 @@ function App() {
 
       {currentPage === 'giocatori' && (
         <Giocatori onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />
+      )}
+
+      {currentPage === 'matchpred' && (
+        <MatchPred onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />
       )}
     </div>
   );

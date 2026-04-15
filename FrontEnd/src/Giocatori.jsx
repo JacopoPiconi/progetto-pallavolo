@@ -35,7 +35,7 @@ function Giocatori({ onBackClick, onLoginClick, onNavClick }) {
         <span onClick={() => onNavClick('calendario')} style={subMenuItem}>Calendario</span>
         <span onClick={() => onNavClick('classifiche')} style={subMenuItem}>Classifiche</span>
         <span style={activeSubMenu}>Giocatori</span>
-        <span style={subMenuItem}>Match Predictor</span>
+        <span onClick={() => onNavClick('matchpred')} style={subMenuItem}>Match Predictor</span>
       </div>
 
       <div style={{ padding: '40px 5%' }}>
