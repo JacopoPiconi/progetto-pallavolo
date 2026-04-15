@@ -1,77 +1,31 @@
-import React, { useState } from 'react';
-import './Login.css';
+import React from 'react';
 
-function Login() {
-  // Stati per gestire se siamo in login o registrazione
-  const [isLogin, setIsLogin] = useState(true);
-  
-  // Stati per catturare i dati del form
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [nome, setNome] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Qui andrà la chiamata al backend di Jacopo e Yashpreet
-    console.log("Dati inviati:", { email, password, nome, tipo: isLogin ? 'LOGIN' : 'SIGNUP' });
-    alert(`Tentativo di ${isLogin ? 'Accesso' : 'Registrazione'} per: ${email}`);
-  };
-
+function Login({ onBackClick }) {
   return (
-    <div className="login-page">
-      <div className="login-card">
-        <h2>{isLogin ? 'Accedi a VolleyAnalytics' : 'Registrati'}</h2>
-        
-        <form onSubmit={handleSubmit}>
-          {!isLogin && (
-            <div className="input-group">
-              <label>Nome Completo</label>
-              <input 
-                type="text" 
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                placeholder="Inserisci il tuo nome" 
-                required 
-              />
-            </div>
-          )}
-
-          <div className="input-group">
-            <label>Email</label>
-            <input 
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="esempio@volley.it" 
-              required 
-            />
-          </div>
-
-          <div className="input-group">
-            <label>Password</label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••" 
-              required 
-            />
-          </div>
-
-          <button type="submit" className="btn-login">
-            {isLogin ? 'ENTRA' : 'CREA ACCOUNT'}
-          </button>
-        </form>
-
-        <p className="switch-auth">
-          {isLogin ? "Non hai un account? " : "Hai già un account? "}
-          <span onClick={() => setIsLogin(!isLogin)}>
-            {isLogin ? "Registrati qui" : "Accedi qui"}
-          </span>
-        </p>
+    <div style={containerStyle}>
+      <button onClick={onBackClick} style={backFloatBtn}>← Torna Indietro</button>
+      
+      <div style={loginCard}>
+        <h2 style={{ textAlign: 'center', color: '#1a237e', marginBottom: '30px' }}>Accedi a VolleyAnalytics</h2>
+        <div style={inputGroup}>
+          <label>Email</label>
+          <input type="email" placeholder="latua@email.com" style={inputStyle} />
+        </div>
+        <div style={inputGroup}>
+          <label>Password</label>
+          <input type="password" placeholder="••••••••" style={inputStyle} />
+        </div>
+        <button style={loginBtn}>Entra</button>
       </div>
     </div>
   );
 }
+
+const containerStyle = { height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9', fontFamily: 'sans-serif' };
+const backFloatBtn = { position: 'absolute', top: '20px', left: '20px', padding: '12px 24px', borderRadius: '50px', border: 'none', backgroundColor: '#1a237e', color: 'white', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' };
+const loginCard = { background: 'white', padding: '40px', borderRadius: '20px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px' };
+const inputGroup = { marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '8px' };
+const inputStyle = { padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none' };
+const loginBtn = { width: '100%', padding: '15px', background: '#fbc02d', color: '#1a237e', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' };
 
 export default Login;

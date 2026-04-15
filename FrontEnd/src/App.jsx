@@ -4,57 +4,53 @@ import Login from './Login';
 import Dashboard from './Dashboard';
 import Calendario from './Calendario';
 import Classifiche from './Classifiche';
+import Giocatori from './Giocatori';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
+  const [lastViewedTab, setLastViewedTab] = useState('dashboard');
+  // Questa variabile serve a Login per sapere dove tornare
+  const [previousPage, setPreviousPage] = useState('home');
+
+  const navigateTo = (page) => {
+    if (['dashboard', 'calendario', 'classifiche', 'giocatori'].includes(page)) {
+      setLastViewedTab(page);
+    }
+    // Prima di cambiare, memorizziamo da dove veniamo
+    setPreviousPage(currentPage);
+    setCurrentPage(page);
+  };
 
   return (
     <div className="App">
       {currentPage === 'home' && (
         <Home 
-          onLoginClick={() => setCurrentPage('login')} 
-          onExploreClick={() => setCurrentPage('dashboard')} 
+          onLoginClick={() => navigateTo('login')} 
+          onExploreClick={() => navigateTo(lastViewedTab)} 
         />
       )}
       
       {currentPage === 'login' && (
-        <div style={{ position: 'relative' }}>
-          <button onClick={() => setCurrentPage('home')} style={backFloatBtn}>← Home</button>
-          <Login />
-        </div>
+        <Login onBackClick={() => setCurrentPage(previousPage)} />
       )}
 
       {currentPage === 'dashboard' && (
-        <Dashboard 
-          onBackClick={() => setCurrentPage('home')} 
-          onLoginClick={() => setCurrentPage('login')}
-          onNavClick={(page) => setCurrentPage(page)}
-        />
+        <Dashboard onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />
       )}
 
       {currentPage === 'calendario' && (
-        <Calendario 
-          onBackClick={() => setCurrentPage('home')} 
-          onLoginClick={() => setCurrentPage('login')}
-          onNavClick={(page) => setCurrentPage(page)}
-        />
+        <Calendario onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />
       )}
 
       {currentPage === 'classifiche' && (
-        <Classifiche 
-          onBackClick={() => setCurrentPage('home')} 
-          onLoginClick={() => setCurrentPage('login')}
-          onNavClick={(page) => setCurrentPage(page)}
-        />
+        <Classifiche onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />
+      )}
+
+      {currentPage === 'giocatori' && (
+        <Giocatori onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />
       )}
     </div>
   );
 }
-
-const backFloatBtn = {
-  position: 'absolute', top: '20px', left: '20px', padding: '12px 24px', 
-  borderRadius: '50px', border: 'none', backgroundColor: '#1a237e', color: 'white',
-  fontWeight: 'bold', cursor: 'pointer', zIndex: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-};
 
 export default App;

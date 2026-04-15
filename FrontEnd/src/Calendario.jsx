@@ -25,7 +25,7 @@ function Calendario({ onBackClick, onLoginClick, onNavClick }) {
         <span onClick={() => onNavClick('dashboard')} style={subMenuItem}>Dashboard</span>
         <span style={activeSubMenu}>Calendario</span>
         <span onClick={() => onNavClick('classifiche')} style={subMenuItem}>Classifiche</span>
-        <span style={subMenuItem}>Giocatori</span>
+        <span onClick={() => onNavClick('giocatori')} style={subMenuItem}>Giocatori</span>
         <span style={subMenuItem}>Match Predictor</span>
       </div>
 

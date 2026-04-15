@@ -18,7 +18,7 @@ function Dashboard({ onBackClick, onLoginClick, onNavClick }) {
         <span style={activeSubMenu}>Dashboard</span>
         <span onClick={() => onNavClick('calendario')} style={subMenuItem}>Calendario</span>
         <span onClick={() => onNavClick('classifiche')} style={subMenuItem}>Classifiche</span>
-        <span style={subMenuItem}>Giocatori</span>
+        <span onClick={() => onNavClick('giocatori')} style={subMenuItem}>Giocatori</span>
         <span style={subMenuItem}>Match Predictor</span>
       </div>
 
