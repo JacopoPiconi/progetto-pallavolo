@@ -1,14 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 
 import giocatoriRoutes from './routes/giocatori.js';
 import classificheRoutes from './routes/classifiche.js';
 import partiteRoutes from './routes/partite.js';
 import squadreRoutes from './routes/squadre.js';
 import matchRoutes from './routes/match.js';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
