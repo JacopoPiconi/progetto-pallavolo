@@ -1,5 +1,5 @@
-const gestore_connessioni = require('./db');
-const axios = require('axios');
+import gestore_connessioni from './db.js';
+import axios from 'axios';
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 // Normalizzatore integrato
@@ -80,4 +80,4 @@ async function importaAnagraficaMondiale(apiKey) {
     }
 }
 
-module.exports = { importaAnagraficaMondiale };
+export { importaAnagraficaMondiale };

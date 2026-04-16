@@ -11,7 +11,7 @@ function aggiornaRating(ratingA, ratingB, risultatoA) {// Aggiorna i rating di A
     const nuovoB = Math.round(ratingB + K * (risultatoB - probabilitaB));
     return { nuovoA, nuovoB };
 }
-module.exports = {
+export {
     calcolaProbabilitaAttesa,
     aggiornaRating
 };

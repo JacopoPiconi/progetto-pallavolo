@@ -1,10 +1,11 @@
-require('dotenv').config();
-const axios = require('axios');
-const { importaAnagraficaMondiale } = require('./fase_anagrafica');
-const { importaRisultatiEUpdateElo } = require('./fase_risultati');
-const { generaPronosticiFuturi } = require('./fase_pronostici');
+import axios from 'axios';
+import { importaAnagraficaMondiale } from './fase_anagrafica.js';
+import { importaRisultatiEUpdateElo } from './fase_risultati.js';
+import { generaPronosticiFuturi } from './fase_pronostici.js';
+
 // Funzione di sleep per gestire i ritardi tra le chiamate API
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 async function avviaSistemaMultiThread() {
     console.log("VOLLEY ANALYTICS SYSTEM: PRO EDITION (MULTI-API) ===");
     const key1 = process.env.API_KEY_FASE1;
