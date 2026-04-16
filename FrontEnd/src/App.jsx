@@ -6,6 +6,7 @@ import Calendario from './Calendario';
 import Classifiche from './Classifiche';
 import Giocatori from './Giocatori';
 import MatchPred from './MatchPred';
+import Registrazione from './Registrazione';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -27,28 +28,22 @@ function App() {
       )}
       
       {currentPage === 'login' && (
-        <Login onBackClick={() => setCurrentPage(previousPage)} />
+        <Login 
+          onBackClick={() => setCurrentPage(previousPage)} 
+          onGoToRegister={() => setCurrentPage('registrazione')} // Passiamo l'azione
+        />
       )}
 
-      {currentPage === 'dashboard' && (
-        <Dashboard onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />
+      {currentPage === 'registrazione' && (
+      <Registrazione onBackClick={() => setCurrentPage('login')} />
       )}
 
-      {currentPage === 'calendario' && (
-        <Calendario onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />
-      )}
-
-      {currentPage === 'classifiche' && (
-        <Classifiche onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />
-      )}
-
-      {currentPage === 'giocatori' && (
-        <Giocatori onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />
-      )}
-
-      {currentPage === 'matchpred' && (
-        <MatchPred onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />
-      )}
+      {/* ... (tutte le altre rotte: dashboard, calendario, ecc.) */}
+      {currentPage === 'dashboard' && <Dashboard onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />}
+      {currentPage === 'calendario' && <Calendario onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />}
+      {currentPage === 'classifiche' && <Classifiche onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />}
+      {currentPage === 'giocatori' && <Giocatori onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />}
+      {currentPage === 'matchpred' && <MatchPred onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />}
     </div>
   );
 }
