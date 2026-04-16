@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import gestore_connessioni from './db.js'; 
 
 import giocatoriRoutes from './routes/giocatori.js';
 import classificheRoutes from './routes/classifiche.js';
@@ -23,6 +24,35 @@ app.use('/api/classifiche', classificheRoutes);
 app.use('/api/partite', partiteRoutes);
 app.use('/api/squadre', squadreRoutes);
 app.use('/api/match', matchRoutes);
+
+app.post('/api/registrazione', async (req, res) => {
+    // Estraiamo i dati che il frontend ci ha inviato
+    const { nome, cognome, email, password } = req.body;
+
+    try {
+        // Query di inserimento. Ruolo 'tifoso' assegnato di default
+        const query = `
+            INSERT INTO utenti (nome, cognome, email, password, ruolo_assegnato) 
+            VALUES (?, ?, ?, ?, 'tifoso')
+        `;
+        
+        // Eseguiamo la query (assicurati di usare il nome corretto della tua variabile di connessione)
+        await gestore_connessioni.query(query, [nome, cognome, email, password]);
+
+        // Rispondiamo al frontend che è andato tutto bene
+        res.status(201).json({ message: "Utente registrato con successo" });
+
+    } catch (error) {
+        console.error("Errore durante la registrazione:", error);
+        
+        // Controllo se l'email esiste già nel database
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ message: "Questa email è già registrata!" });
+        }
+        
+        res.status(500).json({ message: "Errore interno del server" });
+    }
+});
 
 app.listen(PORT, () => {
   console.log(`Server in esecuzione sulla porta ${PORT}`);
