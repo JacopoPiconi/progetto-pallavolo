@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-function Classifiche({ onBackClick, onLoginClick, onNavClick, userRole }) {
+function Classifiche({ onBackClick, onLoginClick, onNavClick }) {
   const [leagues, setLeagues] = useState([]);
 
   useEffect(() => {
     fetch('http://localhost:3000/api/classifiche')
       .then(res => res.json())
       .then(data => {
+        // Trasformiamo la lista piatta in un array raggruppato per lega
         const grouped = data.reduce((acc, item) => {
           if (!acc[item.nome_lega]) {
             acc[item.nome_lega] = { name: item.nome_lega, nation: item.nazione, teams: [] };
@@ -37,27 +38,31 @@ function Classifiche({ onBackClick, onLoginClick, onNavClick, userRole }) {
         <span style={activeSubMenu}>Classifiche</span>
         <span onClick={() => onNavClick('giocatori')} style={subMenuItem}>Giocatori</span>
         <span onClick={() => onNavClick('matchpred')} style={subMenuItem}>Match Predictor</span>
-        {userRole === 'admin' && (
-          <span onClick={() => onNavClick('gestione')} style={{...subMenuItem, color: '#fbc02d', fontWeight: 'bold', borderLeft: '1px solid #e2e8f0', paddingLeft: '20px'}}>⚙️ Admin Panel</span>
-        )}
       </div>
 
       <div style={{ padding: '30px 5%' }}>
         {leagues.map((league, idx) => (
           <div key={idx} style={leagueCard}>
-            <h3>{league.name}</h3>
-            <table style={{width: '100%', borderCollapse: 'collapse'}}>
+            <div style={leagueHeader}>
+              <div>
+                <h3 style={{ margin: 0, color: '#1e293b' }}>{league.name}</h3>
+                <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.9rem' }}>{league.nation}</p>
+              </div>
+            </div>
+            <table style={tableStyle}>
               <thead>
-                <tr style={{borderBottom: '1px solid #f1f5f9', color: '#64748b'}}>
-                  <th style={{padding: '10px', textAlign: 'left'}}>Squadra</th>
-                  <th style={{padding: '10px'}}>Rating</th>
+                <tr style={theadStyle}>
+                  <th style={thStyle}>Pos</th>
+                  <th style={{...thStyle, textAlign: 'left'}}>Squadra</th>
+                  <th style={thStyle}>Rating</th>
                 </tr>
               </thead>
               <tbody>
-                {league.teams.map((team) => (
-                  <tr key={team.id_squadra} style={{borderBottom: '1px solid #f8fafc'}}>
-                    <td style={{padding: '12px', fontWeight: 'bold'}}>{team.nome_squadra}</td>
-                    <td style={{padding: '12px', textAlign: 'center'}}>{team.punteggio_rating}</td>
+                {league.teams.map((team, tIdx) => (
+                  <tr key={team.id_squadra} style={trStyle}>
+                    <td style={tdStyle}>{tIdx + 1}°</td>
+                    <td style={{...tdStyle, textAlign: 'left', fontWeight: 'bold'}}>{team.nome_squadra}</td>
+                    <td style={tdStyle}>{team.punteggio_rating}</td>
                   </tr>
                 ))}
               </tbody>
@@ -69,13 +74,20 @@ function Classifiche({ onBackClick, onLoginClick, onNavClick, userRole }) {
   );
 }
 
+// STILI (Mantenuti)
 const containerStyle = { minHeight: '100vh', backgroundColor: '#f1f5f9', fontFamily: 'sans-serif' };
 const navStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 5%', background: '#1a237e', color: 'white' };
-const subMenuStyle = { display: 'flex', gap: '40px', padding: '15px 5%', background: 'white', borderBottom: '1px solid #e2e8f0', alignItems: 'center' };
+const btnPri = { padding: '8px 25px', background: '#fbc02d', color: '#1a237e', border: 'none', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer' };
+const btnSec = { padding: '8px 25px', background: 'transparent', color: 'white', border: '1px solid white', borderRadius: '50px', cursor: 'pointer' };
+const subMenuStyle = { display: 'flex', gap: '40px', padding: '15px 5%', background: 'white', borderBottom: '1px solid #e2e8f0' };
 const subMenuItem = { color: '#64748b', cursor: 'pointer', fontWeight: '500' };
 const activeSubMenu = { color: '#1e293b', fontWeight: 'bold', borderBottom: '2px solid #1a237e' };
 const leagueCard = { background: 'white', borderRadius: '20px', padding: '20px', marginBottom: '30px', border: '1px solid #e2e8f0' };
-const btnPri = { padding: '8px 25px', backgroundColor: '#fbc02d', color: '#1a237e', border: 'none', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer' };
-const btnSec = { padding: '8px 25px', background: 'transparent', color: 'white', border: '1px solid white', borderRadius: '50px', cursor: 'pointer' };
+const leagueHeader = { marginBottom: '20px' };
+const tableStyle = { width: '100%', borderCollapse: 'collapse' };
+const theadStyle = { borderBottom: '1px solid #f1f5f9' };
+const thStyle = { padding: '12px', fontSize: '0.85rem', color: '#64748b', fontWeight: '500' };
+const trStyle = { borderBottom: '1px solid #f8fafc' };
+const tdStyle = { padding: '15px 12px', color: '#1e293b', fontSize: '0.95rem', textAlign: 'center' };
 
 export default Classifiche;
