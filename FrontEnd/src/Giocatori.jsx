@@ -1,59 +1,40 @@
 import React, { useState, useEffect } from 'react';
 
-function MatchPred({ onBackClick, onLoginClick, onNavClick }) {
-  // Stati per memorizzare i dati dinamici
-  const [squadre, setSquadre] = useState([]);
-  const [teamA, setTeamA] = useState('');
-  const [teamB, setTeamB] = useState('');
+function Giocatori({ onBackClick, onLoginClick, onNavClick }) {
+  const [selectedTeam, setSelectedTeam] = useState('Tutte le squadre');
   
-  const [prediction, setPrediction] = useState({ probA: 50, score: 'VS' });
-  const [loading, setLoading] = useState(false);
+  // STATI PER IL BACKEND
+  const [players, setPlayers] = useState([]); // Qui salveremo i giocatori dal database
+  const [loading, setLoading] = useState(true); // Per mostrare un testo di caricamento
+  const [error, setError] = useState(null);
 
-  // 1. All'avvio, scarichiamo la lista delle squadre dal database
+  // CHIAMATA API AL DATABASE AL CARICAMENTO DELLA PAGINA
   useEffect(() => {
-    fetch('http://localhost:3000/api/squadre')
-      .then(res => res.json())
-      .then(data => {
-        setSquadre(data);
-        // Selezioniamo le prime due squadre di default (se esistono)
-        if (data.length >= 2) {
-          setTeamA(data[0].id_squadra);
-          setTeamB(data[1].id_squadra);
+    fetch('http://localhost:3000/api/giocatori')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Errore nella risposta del server');
         }
+        return response.json();
       })
-      .catch(err => console.error("Errore nel caricamento delle squadre:", err));
-  }, []);
-
-  // 2. Ogni volta che teamA o teamB cambiano, chiediamo il pronostico al server
-  useEffect(() => {
-    // Non facciamo chiamate se mancano le squadre o se l'utente ha scelto la stessa squadra
-    if (!teamA || !teamB || teamA === teamB) return;
-
-    setLoading(true);
-    fetch('http://localhost:3000/api/match/predict', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id_squadra_A: teamA, id_squadra_B: teamB })
-    })
-      .then(res => res.json())
       .then(data => {
-        if (!data.error) {
-          setPrediction({ probA: data.probabilita_A, score: data.risultato_stimato });
-        }
+        setPlayers(data);
         setLoading(false);
       })
-      .catch(err => {
-        console.error("Errore durante la predizione:", err);
+      .catch(error => {
+        console.error("Errore nel caricamento dei giocatori:", error);
+        setError("Impossibile caricare i giocatori. Verifica che il backend sia acceso.");
         setLoading(false);
       });
-  }, [teamA, teamB]);
+  }, []);
 
   return (
     <div style={containerStyle}>
-      {/* NAVBAR */}
+      {/* NAVBAR BLU - Stile Enterprise */}
       <nav style={navStyle}>
         <div style={{ cursor: 'pointer' }} onClick={() => onNavClick('dashboard')}>
           <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Volley<span style={{color: '#fbc02d'}}>Analytics</span></h2>
+          <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.8 }}>Piattaforma enterprise di sport analytics</p>
         </div>
         <div style={{ display: 'flex', gap: '15px' }}>
           <button onClick={onBackClick} style={btnSec}>Home</button>
@@ -61,82 +42,101 @@ function MatchPred({ onBackClick, onLoginClick, onNavClick }) {
         </div>
       </nav>
 
-      {/* SUB MENU */}
+      {/* SUB MENU BIANCO */}
       <div style={subMenuStyle}>
         <span onClick={() => onNavClick('dashboard')} style={subMenuItem}>Dashboard</span>
         <span onClick={() => onNavClick('calendario')} style={subMenuItem}>Calendario</span>
         <span onClick={() => onNavClick('classifiche')} style={subMenuItem}>Classifiche</span>
-        <span onClick={() => onNavClick('giocatori')} style={subMenuItem}>Giocatori</span>
-        <span style={activeSubMenu}>Match Predictor</span>
+        <span style={activeSubMenu}>Giocatori</span>
+        <span onClick={() => onNavClick('matchpred')} style={subMenuItem}>Match Predictor</span>
       </div>
 
-      <div style={{ padding: '40px 5%' }}>
-        <h1>Match Predictor</h1>
-        <p style={{ color: '#94a3b8' }}>Algoritmo di simulazione match</p>
-
-        <div style={predictorGrid}>
-          {/* SQUADRA CASA */}
-          <div style={teamCard}>
-            <div style={{...avatar, backgroundColor: '#3949ab'}}>C</div>
-            <select value={teamA} onChange={(e) => setTeamA(e.target.value)} style={select}>
-              {squadre.map(s => (
-                <option key={`A-${s.id_squadra}`} value={s.id_squadra}>
-                  {s.nome_squadra}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* SEZIONE CENTRALE: RISULTATI E BARRA */}
-          <div style={centerSection}>
-            {loading ? (
-              <div style={{ fontWeight: 'bold', color: '#64748b' }}>Calcolo in corso...</div>
-            ) : teamA === teamB ? (
-              <div style={{ color: '#ef4444', fontWeight: 'bold' }}>Seleziona squadre diverse</div>
-            ) : (
-              <>
-                <div style={winBadge}>{prediction.probA}% Probabilità Casa</div>
-                <div style={barBg}>
-                  {/* La larghezza della barra cambia dinamicamente in base alla percentuale */}
-                  <div style={{...barFill, width: `${prediction.probA}%`}}></div>
-                </div>
-                <div style={{fontSize: '1.5rem', fontWeight: 'bold'}}>Risultato: {prediction.score}</div>
-              </>
-            )}
-          </div>
-
-          {/* SQUADRA TRASFERTA */}
-          <div style={teamCard}>
-            <div style={{...avatar, backgroundColor: '#ef4444'}}>T</div>
-            <select value={teamB} onChange={(e) => setTeamB(e.target.value)} style={select}>
-              {squadre.map(s => (
-                <option key={`B-${s.id_squadra}`} value={s.id_squadra}>
-                  {s.nome_squadra}
-                </option>
-              ))}
-            </select>
-          </div>
+      <div style={{ padding: '30px 5%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ color: '#1e293b' }}>Database Atleti</h2>
+          <select 
+            style={filterSelect} 
+            value={selectedTeam} 
+            onChange={(e) => setSelectedTeam(e.target.value)}
+          >
+            <option>Tutte le squadre</option>
+            <option>Squadra Alpha</option>
+            <option>Squadra Beta</option>
+          </select>
         </div>
+
+        {/* Gestione Errori o Caricamento */}
+        {loading && <p style={{textAlign: 'center', marginTop: '50px'}}>Caricamento giocatori in corso...</p>}
+        {error && <p style={{textAlign: 'center', marginTop: '50px', color: 'red'}}>{error}</p>}
+        {!loading && !error && players.length === 0 && <p style={{textAlign: 'center', marginTop: '50px'}}>Nessun giocatore trovato nel database.</p>}
+
+        {/* GRIGLIA GIOCATORI */}
+        {!loading && !error && players.length > 0 && (
+          <div style={playerGrid}>
+            {players.map(player => (
+              <div key={player.id_giocatore} style={playerCard}>
+                <div style={cardHeader}>
+                  <div style={avatarCircle}>
+                    {/* Prende la prima lettera del nome e del cognome per l'avatar rotondo */}
+                    {player.nome ? player.nome.charAt(0).toUpperCase() : ''}
+                    {player.cognome ? player.cognome.charAt(0).toUpperCase() : ''}
+                  </div>
+                  <div>
+                    <div style={playerName}>{player.nome} {player.cognome}</div>
+                    <div style={playerTeam}>Squadra ID: {player.id_squadra}</div>
+                  </div>
+                </div>
+
+                {/* RUOLO CAMPO (Preso direttamente dal DB) */}
+                <div style={{ marginBottom: '20px' }}>
+                  <span style={roleBadge}>{player.ruolo_campo}</span>
+                </div>
+
+                <div style={statsGrid}>
+                  <div style={statBox}>
+                    <div style={statValue}>0</div>
+                    <div style={statLabel}>Aces</div>
+                  </div>
+                  <div style={statBox}>
+                    <div style={statValue}>0</div>
+                    <div style={statLabel}>Muri</div>
+                  </div>
+                  <div style={statBox}>
+                    <div style={statValue}>0</div>
+                    <div style={statLabel}>Punti</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-// --- STILI (Mantenuti dal tuo file originale) ---
+// --- STILI CSS (Identici a quelli originali del tuo amico) ---
 const containerStyle = { minHeight: '100vh', backgroundColor: '#f8fafc', fontFamily: 'sans-serif' };
 const navStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 5%', background: '#1a237e', color: 'white' };
-const subMenuStyle = { display: 'flex', gap: '35px', padding: '0 5%', background: 'white', borderBottom: '1px solid #e2e8f0', height: '50px', alignItems: 'center' };
+const subMenuStyle = { display: 'flex', gap: '40px', padding: '15px 5%', background: 'white', borderBottom: '1px solid #e2e8f0' };
 const subMenuItem = { color: '#64748b', cursor: 'pointer', fontWeight: '500' };
 const activeSubMenu = { color: '#1e293b', fontWeight: 'bold', borderBottom: '3px solid #1a237e', height: '100%', display: 'flex', alignItems: 'center' };
-const predictorGrid = { display: 'flex', gap: '20px', alignItems: 'center', marginTop: '30px' };
-const teamCard = { flex: 1, background: 'white', padding: '30px', borderRadius: '24px', border: '1px solid #e2e8f0', textAlign: 'center' };
-const avatar = { width: '70px', height: '70px', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', margin: '0 auto 20px' };
-const select = { width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0', fontWeight: 'bold' };
-const centerSection = { flex: 1, textAlign: 'center' };
-const winBadge = { background: '#fbc02d', padding: '5px 15px', borderRadius: '20px', fontWeight: 'bold', display: 'inline-block', marginBottom: '10px' };
-const barBg = { height: '12px', background: '#e2e8f0', borderRadius: '10px', margin: '20px 0', overflow: 'hidden' };
-const barFill = { height: '100%', background: '#1a237e', borderRadius: '10px', transition: 'width 0.4s ease-in-out' }; // Aggiunta animazione fluida
-const btnPri = { padding: '8px 25px', backgroundColor: '#fbc02d', border: 'none', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer' };
+
+const btnPri = { padding: '8px 25px', background: '#fbc02d', color: '#1a237e', border: 'none', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer' };
 const btnSec = { padding: '8px 25px', background: 'transparent', color: 'white', border: '1px solid white', borderRadius: '50px', cursor: 'pointer' };
 
-export default MatchPred;
+const filterSelect = { padding: '10px 15px', borderRadius: '10px', border: '1px solid #e2e8f0', backgroundColor: 'white', cursor: 'pointer' };
+const playerGrid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '25px', marginTop: '20px' };
+const playerCard = { background: 'white', borderRadius: '24px', padding: '30px', border: '1px solid #e2e8f0' };
+const cardHeader = { display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '20px' };
+const avatarCircle = { width: '60px', height: '60px', background: '#7c3aed', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.2rem' };
+const playerName = { fontWeight: 'bold', fontSize: '1.3rem', color: '#1e293b' };
+const playerTeam = { color: '#94a3b8', fontSize: '0.95rem' };
+const roleBadge = { background: '#eff6ff', color: '#1d4ed8', padding: '6px 16px', borderRadius: '50px', fontSize: '0.85rem', fontWeight: 'bold', display: 'inline-block', textTransform: 'capitalize' };
+
+const statsGrid = { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', background: '#f8fafc', padding: '15px', borderRadius: '15px' };
+const statBox = { textAlign: 'center' };
+const statValue = { fontWeight: 'bold', fontSize: '1.2rem', color: '#1e293b' };
+const statLabel = { fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '5px' };
+
+export default Giocatori;
