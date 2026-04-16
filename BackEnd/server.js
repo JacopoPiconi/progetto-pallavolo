@@ -6,6 +6,7 @@ import giocatoriRoutes from './routes/giocatori.js';
 import classificheRoutes from './routes/classifiche.js';
 import partiteRoutes from './routes/partite.js';
 import squadreRoutes from './routes/squadre.js';
+import matchRoutes from './routes/match.js';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use('/api/giocatori', giocatoriRoutes);
 app.use('/api/classifiche', classificheRoutes);
 app.use('/api/partite', partiteRoutes);
 app.use('/api/squadre', squadreRoutes);
+app.use('/api/match', matchRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server in esecuzione sulla porta ${PORT}`);
