@@ -54,6 +54,20 @@ app.post('/api/registrazione', async (req, res) => {
     }
 });
 
+// Aggiungi questa rotta nel tuo file principale del backend
+app.get('/api/utenti', async (req, res) => {
+    try {
+        // Estraiamo tutti i dati utili per il login e la gestione
+        const query = "SELECT id_utente, nome, cognome, email, password, ruolo_assegnato FROM utenti";
+        const [utenti] = await gestore_connessioni.query(query);
+        
+        res.status(200).json(utenti);
+    } catch (error) {
+        console.error("Errore nel recupero utenti:", error);
+        res.status(500).json({ message: "Errore interno del server" });
+    }
+});
+
 app.listen(PORT, () => {
   console.log(`Server in esecuzione sulla porta ${PORT}`);
 });
