@@ -19,8 +19,9 @@ async function avviaSistemaMultiThread() {
 
     try {
         //STEP 1: ANAGRAFICA (Usa la Chiave 1) ---
-        console.log("\n[STEP 1] Popolamento Database con Sistema di Cache...");
-        await importaAnagraficaMondiale(key1);
+        console.log("\n[STEP 1] SALTO Popolamento Database (Dati già presenti)...");
+        // await importaAnagraficaMondiale(key1); 
+        
         //STEP 2 e 3: RISULTATI/ELO + PRONOSTICI (Usano Chiavi 2 e 3)
         console.log("\nRicerca stagioni valide per l'elaborazione...");
         await sleep(2000);
@@ -34,6 +35,10 @@ async function avviaSistemaMultiThread() {
 
         for (const lega of legheSelezionate) {
             console.log(`\nAvvio elaborazione parallela per: ${lega.name}`);
+            
+            // --- ECCO IL FRENO A MANO AGGIUNTO ---
+            await sleep(2000); 
+            // ------------------------------------
             
             const urlStagioni = `https://api.sportradar.com/volleyball/trial/v2/en/competitions/${lega.id}/seasons.json?api_key=${key1}`;
             const rispStagioni= await axios.get(urlStagioni);
