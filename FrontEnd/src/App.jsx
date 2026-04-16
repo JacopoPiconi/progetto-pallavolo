@@ -7,11 +7,15 @@ import Classifiche from './Classifiche';
 import Giocatori from './Giocatori';
 import MatchPred from './MatchPred';
 import Registrazione from './Registrazione';
+import GestioneContenuti from './GestioneContenuti';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [lastViewedTab, setLastViewedTab] = useState('dashboard');
   const [previousPage, setPreviousPage] = useState('home');
+  
+  // Stato utente: se null è un tifoso visitatore
+  const [user, setUser] = useState(null); 
 
   const navigateTo = (page) => {
     if (['dashboard', 'calendario', 'classifiche', 'giocatori', 'matchpred'].includes(page)) {
@@ -19,6 +23,21 @@ function App() {
     }
     setPreviousPage(currentPage);
     setCurrentPage(page);
+  };
+
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+    // Se l'admin accede, va subito alla gestione, altrimenti alla dashboard
+    if (userData.ruolo === 'admin') {
+      setCurrentPage('gestione');
+    } else {
+      setCurrentPage('dashboard');
+    }
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentPage('home');
   };
 
   return (
@@ -30,20 +49,30 @@ function App() {
       {currentPage === 'login' && (
         <Login 
           onBackClick={() => setCurrentPage(previousPage)} 
-          onGoToRegister={() => setCurrentPage('registrazione')} // Passiamo l'azione
+          onGoToRegister={() => setCurrentPage('registrazione')}
+          onLoginSuccess={handleLoginSuccess} 
         />
       )}
 
       {currentPage === 'registrazione' && (
-      <Registrazione onBackClick={() => setCurrentPage('login')} />
+        <Registrazione onBackClick={() => setCurrentPage('login')} />
       )}
 
-      {/* ... (tutte le altre rotte: dashboard, calendario, ecc.) */}
-      {currentPage === 'dashboard' && <Dashboard onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />}
-      {currentPage === 'calendario' && <Calendario onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />}
-      {currentPage === 'classifiche' && <Classifiche onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />}
-      {currentPage === 'giocatori' && <Giocatori onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />}
-      {currentPage === 'matchpred' && <MatchPred onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} />}
+      {/* Pannello Admin: visibile SOLO se il ruolo è admin */}
+      {currentPage === 'gestione' && user?.ruolo === 'admin' && (
+        <GestioneContenuti 
+          userRole={user.ruolo} 
+          onBackClick={handleLogout} 
+          onNavClick={navigateTo} 
+        />
+      )}
+
+      {/* Pagine standard: passiamo userRole per mostrare/nascondere il tasto gestione */}
+      {currentPage === 'dashboard' && <Dashboard onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} userRole={user?.ruolo} />}
+      {currentPage === 'calendario' && <Calendario onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} userRole={user?.ruolo} />}
+      {currentPage === 'classifiche' && <Classifiche onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} userRole={user?.ruolo} />}
+      {currentPage === 'giocatori' && <Giocatori onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} userRole={user?.ruolo} />}
+      {currentPage === 'matchpred' && <MatchPred onBackClick={() => navigateTo('home')} onLoginClick={() => navigateTo('login')} onNavClick={navigateTo} userRole={user?.ruolo} />}
     </div>
   );
 }
